@@ -1,10 +1,18 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from src.database.config import get_db
+from src.database.config import get_db, init_db
 from src.database.repositorio import CarritoRepositorio
 from pydantic import BaseModel
 
-app = FastAPI(title="TiendaUV - Carrito de Compras")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="TiendaUV - Carrito de Compras", lifespan=lifespan)
 
 
 class ProductoInput(BaseModel):
